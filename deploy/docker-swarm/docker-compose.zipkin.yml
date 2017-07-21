@@ -1,0 +1,122 @@
+version: '3'
+
+services:
+  front-end:
+    image: 192.168.122.161:5000/amd64/front-end:0.3.12
+    hostname: front-end
+    ports:
+      - '80:8079'
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ubuntu-amd64
+  catalogue:
+    image: 192.168.122.161:5000/ppc64le/catalogue:0.3.5
+    hostname: catalogue
+    environment:
+      - ZIPKIN=http://zipkin:9411/api/v1/spans
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == rhel-ppc64le
+  catalogue-db:
+    image: 192.168.122.161:5000/amd64/catalogue-db:0.3.5
+    hostname: catalogue-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DATABASE=socksdb
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ubuntu-amd64
+  carts:
+    image: 192.168.122.161:5000/ppc64le/carts:0.4.8
+    hostname: carts
+    environment:
+      - JAVA_OPTS=-Xms64m -Xmx128m -XX:PermSize=32m -XX:MaxPermSize=64m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == rhel-ppc64le
+  carts-db:
+    image: 192.168.122.161:5000/amd64/mongo
+    hostname: carts-db
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ubuntu-amd64
+  orders:
+    image: 192.168.122.161:5000/ppc64le/orders:0.4.7
+    hostname: orders
+    environment:
+      - JAVA_OPTS=-Xms64m -Xmx128m -XX:PermSize=32m -XX:MaxPermSize=64m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == rhel-ppc64le
+  orders-db:
+    image: 192.168.122.161:5000/amd64/mongo
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ubuntu-amd64
+  shipping:
+    image: 192.168.122.161:5000/ppc64le/shipping:0.4.8
+    hostname: shipping
+    environment:
+      - JAVA_OPTS=-Xms64m -Xmx128m -XX:PermSize=32m -XX:MaxPermSize=64m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == rhel-ppc64le
+  rabbitmq:
+    image: 192.168.122.161:5000/amd64/rabbitmq:3
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ubuntu-amd64
+  payment:
+    image: 192.168.122.161:5000/amd64/payment:0.4.3
+    hostname: payment
+    environment:
+      - ZIPKIN=http://zipkin:9411/api/v1/spans
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ubuntu-amd64
+  user:
+    image: 192.168.122.161:5000/user:0.4.4
+    hostname: user
+    environment:
+      - MONGO_HOST=user-db:27017
+      - ZIPKIN=http://zipkin:9411/api/v1/spans
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ubuntu-amd64
+  user-db:
+    image: 192.168.122.161:5000/amd64/user-db:0.4.4
+    hostname: user-db
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ubuntu-amd64
+  zipkin:
+    image: 192.168.122.161:5000/amd64/zipkin
+    hostname: zipkin
+    tmpfs:
+      - /tmp:rw,noexec,nosuid
+    ports:
+      - "9411:9411"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ubuntu-amd64
+  user-sim:
+    image: 192.168.122.161:5000/amd64/load-test
+    command: "-d 60 -r 200 -c 2 -h front-end"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ubuntu-amd64
