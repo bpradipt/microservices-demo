@@ -1,0 +1,15 @@
+mongo:3.5
+rabbitmq:3
+weaveworksdemos/carts:0.4.8
+weaveworksdemos/catalogue-db:0.3.0
+weaveworksdemos/catalogue:0.3.0
+weaveworksdemos/front-end:0.3.12
+weaveworksdemos/orders:0.4.7
+weaveworksdemos/payment:0.4.3
+weaveworksdemos/queue-master:0.3.1
+weaveworksdemos/shipping:0.4.8
+weaveworksdemos/user-db:0.4.0
+weaveworksdemos/user:0.4.4
+openzipkin/zipkin:2.3.1
+openzipkin/zipkin-mysql:1.20.0
+openzipkin/zipkin-dependencies:1.4.0

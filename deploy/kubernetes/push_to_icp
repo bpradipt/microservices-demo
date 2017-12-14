@@ -1,0 +1,10 @@
+ICP_REGISTRY=${1:-mycluster.icp}
+IFS=$'\r\n' GLOBIGNORE='*' command eval  'IMAGES=($(cat image_bom.txt))'
+for image in "${IMAGES[@]}"
+do
+    docker pull $image
+    suffix=`echo $image | cut -f2 -d"/"`
+    docker tag $image "${ICP_REGISTRY}:8500/sockshop/$suffix"
+    echo "Pushing ${ICP_REGISTRY}:8500/sockshop/${suffix}..."
+    docker push "${ICP_REGISTRY}:8500/sockshop/$suffix"
+done
